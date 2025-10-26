@@ -3,46 +3,54 @@ import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 
-#%% import wind file data
+#%% read the project well-structured numeric files
+def read_simple_txt(filepath: str) -> np.ndarray:
+    """read_simple_txt reads the numeric project's wind files
 
-#%% determine Ct
+    Args:
+        filepath (str): path of the file
+
+    Returns:
+        np.ndarray: for wind_files, array with time (s) and wsp (m/s)
+    """
+    array_from_txt = np.loadtxt(filepath, skiprows=1)
+    return array_from_txt
+
+
+#%% get Ct
 
 # read Ct table for the WTG rotor
 def read_wsp_ct_tbl(
-        ct_filepath: str = r"inputs\turbie_inputs\CT.txt"
+        filepath_ct: str = r"inputs\turbie_inputs\CT.txt"
         ) -> np.ndarray:
-    """reads CT.txt containing Ct as f(wsp)
+    """reads CT.txt containing ct as f(wsp)
 
     Args:
-        ct_filepath (str, optional): path to CT.txt.
+        filepath_ct (str, optional): path to CT.txt.
         
     Returns:
-        np.ndarray: parsed Wsp and Ct columns
+        np.ndarray: parsed wsp and ct columns
     """    
-    # NOTE: np.loadtxt is faster for numeric well-structured files
-    wsp_ct_tbl = np.loadtxt(ct_filepath, skiprows=1)
+    # NOTE: reusing read_simple_txt
+    wsp_ct_tbl = read_simple_txt(filepath_ct)
     return wsp_ct_tbl
-    # # using "with open"
-    # wsp = []; ct = []
-    # with open(ct_filepath, 'r', encoding='utf-8') as f:
-    #     next(f) # skips header line
-    #     for line in f: # read line by line
-    #         line = line.strip() # remove whitespace
-    #         cols = line.split() # list of substrings
-    #         wsp.append(float(cols[0]))
-    #         ct.append(float(cols[1]))
-    # wsp_ct_tbl = np.array([wsp,ct]).T
-    # return wsp_ct_tbl
 
+def get_ct(wsp: float, wsp_ct_tbl: np.ndarray) -> float:
+    """get_ct 1d interpolation for a given wsp using CT.txt
 
-def get_ct(wsp, wsp_ct_tbl):
+    Args:
+        wsp (float): wind speed for which ct is interpolated
+        wsp_ct_tbl (np.ndarray): wsp and ct columns
+
+    Returns:
+        ct: thrust coefficient (-)
+    """
     # extract x and y and create interpolation model
     tbl_wsp = wsp_ct_tbl[:,0]
     tbl_ct = wsp_ct_tbl[:,1]
     f_linear = interp1d(tbl_wsp, tbl_ct, kind="linear")
     # interpolate
     ct = f_linear(wsp)
-    #plt.plot(tbl_wsp, tbl_ct); plt.scatter(wsp, ct)
     return ct
 
 
