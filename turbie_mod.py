@@ -185,7 +185,7 @@ def dy(t, y, M, C, K, wind_t, wind_wsp, rotor_area, ct, rho):
 
 
 # run a Turbie simulation with solve_ivp
-def simulate_turbie(t_span, t_eval, y0=[0, 0, 0, 0]):
+def simulate_turbie(t_span, t_eval, args, y0=[0, 0, 0, 0]):
     """use solve_ivp to solve Turbie's 2-DOF equations
 
     Args:
@@ -194,7 +194,7 @@ def simulate_turbie(t_span, t_eval, y0=[0, 0, 0, 0]):
         t_step (float, optional): time step for t_eval. Defaults to 0.01 s.
     """
     # f args NOTE: will fail if args dont exist in scope!
-    args = (M, C, K, wind_t, wind_wsp, params['Ar'], ct, params['rho'])        
+    #args = (M, C, K, wind_t, wind_wsp, params['Ar'], ct, params['rho'])        
     # Solve the ODE (fy must exist in scope!)
     sol = solve_ivp(dy, t_span=t_span, y0=y0, t_eval=t_eval, args=args)
     return sol.t, sol.y[0], sol.y[1], sol.y[2], sol.y[3]
