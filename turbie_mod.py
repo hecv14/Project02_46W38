@@ -24,11 +24,12 @@ def read_simple_txt(filepath):
 
 
 # Import wind data
-def read_wind_txt(filepath_wind):
+def read_wind_txt(filepath_wind, skip_first_n_secs=None):
     """import wind data and store t and wsp an numpy arrays
 
     Args:
-        filepath_wind (str): location of
+        filepath_wind (str): location of wind file
+        skip_first_n_secs (str, optional): skip first n secs
 
     Returns:
         t (np.array): time (s)
@@ -39,6 +40,11 @@ def read_wind_txt(filepath_wind):
     # identify the t and wsp
     t = wind_txt[:,0]
     wsp = wind_txt[:,1]
+    # disregard first n transitory seconds if required
+    if skip_first_n_secs:
+        skip_index = np.where(t == skip_first_n_secs)[0][0]
+        t = t[skip_index:]
+        wsp = wsp[skip_index:]        
     return t, wsp
 
 
@@ -193,7 +199,8 @@ def simulate_turbie(t_span, t_eval, args, y0=[0, 0, 0, 0]):
         y0 (list, optional): Initial (t=0), x1, x2, dx1, dx2. Defaults all to 0.
         t_step (float, optional): time step for t_eval. Defaults to 0.01 s.
     """
-    # f args NOTE: will fail if args dont exist in scope!
+    # f args NOTE: will fail if args dont exist in scope! (fails anyway?)
+    # dy is read from the scope, but args not? had to bring them back explicitly
     #args = (M, C, K, wind_t, wind_wsp, params['Ar'], ct, params['rho'])        
     # Solve the ODE (fy must exist in scope!)
     sol = solve_ivp(dy, t_span=t_span, y0=y0, t_eval=t_eval, args=args)
