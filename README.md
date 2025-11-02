@@ -5,32 +5,35 @@ Turbie is a simple, two-degree-of-freedom (2DOF) system based of the DTU 10 MW R
 <img src="figures/turbie_2DOF_mass_spring_damper.png" alt="Turbie 2DOF mass-spring-damper" width="500"/>
 
 # Discussion
-The 2DOF system was transformed into a system of differential equations so that it could be solved using solve_ivp. The analysis is focused on the position (relative displacement) of m1 (Rotor) and m2 (Hub, Nacelle and Tower). The aerodynamic force acts on the rotor only following a given Ct curve.
+The 2-DOF system was transformed into a system of first order ODEs so that it could be solve using scipy's solve_ivp. The analysis of results is focused on the position (relative displacement) of m1 (Rotor) and m2 (Hub, Nacelle and Tower). The aerodynamic force acts on the rotor only following a given Ct curve.
 
-An example of the 
+Wind speed simulations, covering the wind speed range: 4 - 25 m/s (both inclusive); were provided for 3 distinct levels of turbulence intensity:
+* 5%
+* 10%,
+* 15%.
 
+The input time series have a period of 11 min, and frequency of 100 Hz. The first minute of each input wind speed time series was skipped on the assumption that it includes transitory effects as the simulation converges.
+
+For an input wind speed time series of 9 m/s and a TI of 15% the resulting displacements are shown in the figure below. The **rotor (m1) is shown in blue**, the **hub, nacelle and tower (m2) are shown in orange**. 
+
+Despite the scatter of the 100 Hz points, a clear higher sensitivity of the rotor to the wind speed is easily perceived. This was expected given the fact that the aerodynamic force acts only on m1, and the realistic turbie parameters (M, C, K).
+
+The displacement of m2, can be appreciated as well to a minor extent. From inspection, the position seems linearly dependent on the wind speed, with m1 having a higher slope. The same conclusions can be reached from inspection of the time series on the second half of the plot.
 
 <img src="outputs\plots\x_f_t_wsp.png" alt="x_f_t_wsp" width="500"/>
+
+The **average displacement** of each mass was calculated for each TI-Wsp case. The next plot shows that the 10 min. avg. position is not sensitive to the turbulence intensity, but to the aerodynamic force mainly, dominated by the square of the relative wind speed and the thrust coefficient. The highest displacement corresponds to the highest force. The magnitude of displacement of m2 has the same shape but is significantly lower.
+
 <img src="outputs\plots\x_rel_avg.png" alt="x_f_t_wsp" width="500"/>
+
+The **standard deviation of the displacement** of each mass was calculated as well for each TI-Wsp case. The plot shows that the 10 min. standard deviation continues to follow as expected the aerodynamic force, but this time it is very sensitive to the turbulence intensity.
+
+Even with this simple 2-DOF model, the effect of the turbulence intensity on the fatigue damage and lifetime of a turbine's components, is effectively illustrated, E.g. the standard deviation of the displacement at 15% TI is around 4 times higher that at 5%.
+
 <img src="outputs\plots\x_rel_std.png" alt="x_f_t_wsp" width="500"/>
+
+The average and standard deviation of displacement are combined in the last plot, where the error bar has a height of plus-minus 1 std. deviation. It allows to inspect the previously shown information in a different way.
+
 <img src="outputs\plots\x1_rel_avg_and_std.png" alt="x_f_t_wsp" width="500"/>
 
-Your task for this project is to build a Turbie module within Python housing the equations required to simulate the system. Then, you can import the module and its functions into another Python script. You will then apply the provided wind files to the model to determine how the blade and tower deflections vary with the wind speed and turbulence itensity (TI).
-
-The functions within the Turbie module should enable the:
-* Importing of the wind file data;
-* Determination of the $C_T$ for each **wind speed simulation** based on the **average wind speed**, via interpolation with the wind speed vs. $C_T$ look-up table found in C_T.txt;
-* Building of the Turbie system matrices ($\mathbf{M}$, $\mathbf{K}$ and $\mathbf{C}$) based on the values within the turbie_parameters.txt;
-* Calculation of $\bar{y}'(t)$.
-
-Within your second Python script, you should call upon these functions to solve Turbie for each wind speed case. You should pass $\bar{y}'(t)$ as one of the arguments to the `scipy.integrate.solve_ivp` function (along with initial conditions for $y$), which should then output the blade and tower displacements and velocities of Turbie at each time step.
-
-Your code should enable the simulation of Turbie at each wind speed case within each TI category, with results saved within a text file for each case. 
-
-- For one of the wind speed cases, plot the relative time-marching variation of wind and the blade and tower displacements.
-
-The means and standard deviations of the blade and tower displacements for each wind speed should then be calculated and saved within a separate text file for each TI category.
-
-- Plot the means and standard deviations of the blade and tower displacements for the wind speeds of each TI category.
-
-- Discuss and explain how the means and standard deviations of the blade and tower displacements change with the wind speed and with the TI. 
+The results of each TI-Wsp case are available as text files in the output folder. The average and standard deviation of the displacements is saved in x_rel_stats.txt.
