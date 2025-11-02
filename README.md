@@ -34,6 +34,6 @@ Even with this simple 2-DOF model, the effect of the turbulence intensity on the
 
 The average and standard deviation of displacement are combined in the last plot, where the error bar has a height of plus-minus 1 std. deviation. It allows to inspect the previously shown information in a different way.
 
-<img src="outputs\plots\x1_rel_avg_and_std.png" alt="x_f_t_wsp" width="500"/>
+<img src="outputs\plots\x1_rel_avg_and_std.png" alt="x_f_t_wsp" width="750"/>
 
 The results of each TI-Wsp case are available as text files in the output folder. The average and standard deviation of the displacements is saved in x_rel_stats.txt.
